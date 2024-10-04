@@ -1,0 +1,64 @@
+<div class="container-fluid">
+  <div class="dynamic-form">
+    <form [formGroup]="dynamicForm">
+
+      <div class="dynamic-form__header row">
+        <div *ngIf="!isTimerRunning" class="col-xs-12 col-sm-3 col-md-3">
+          <button class="btn btn-sm btn-primary" [disabled]="dynamicForm.invalid" type="button" (click)="onSubmit()">Submit  all forms</button>
+        </div>
+
+        <div  *ngIf="isTimerRunning" class="row">
+          <div class="col-xs-12 col-sm-3 col-md-1">
+            <button class="btn btn-danger btn-sm" type="button" (click)="onCancel()">Cancel</button>
+          </div>
+          <div  class="col-xs-12 col-sm-3 col-md-4">
+            <div>{{timer.timeLabel}}</div>
+          </div>
+        </div>
+
+      </div>
+      <div class="dynamic-form__body">
+      @for (item of dynamicFormGroups.controls; let formIndex = $index; track formIndex) {
+        <div [formGroup]="getFormGroupByIndex(formIndex)" class="dynamic-form__item">
+          <div class="dynamic-form__close-btn col-12" (click)="removeFormGroup(formIndex)">
+            <div>Х</div>
+          </div>
+            @for (field of fields; let ctrlIndex = $index; track ctrlIndex) {
+              <ng-container [ngSwitch]="field.type">
+                <div *ngSwitchCase="'typeahead'" class="form-group">
+                  <label for="{{ field.id + formIndex }}" class="form-label">{{ field.label }}</label>
+                  <input
+                    appValidationErrors
+                    class="form-control"
+                    [id]="field.label + formIndex"
+                    [type]="field.type"
+                    [ngbTypeahead]="field.search"
+                    [formControlName]="field.id" >
+                </div>
+
+                <div *ngSwitchDefault class="form-group">
+                  <label [for]="field.id + formIndex">{{ field.label }}</label>
+                  <input
+                    appValidationErrors
+                    class="form-control"
+                    [id]="field.label + formIndex"
+                    [type]="field.type"
+                    [formControlName]="field.id" >
+                </div>
+              </ng-container>
+            }
+        </div>
+        }
+        <div class="dynamic-form__add-panel">
+          <button
+            class="dynamic-form__add-panel__btn btn btn-default"
+            appGlobalTooltip
+            [tooltipOptions]="{placement: tooltipPlacement}"
+            [tooltip]="'My global-tooltip'"
+            [disabled]="isTimerRunning"
+            (click)="addFormGroup()">+</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
